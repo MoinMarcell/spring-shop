@@ -2,20 +2,16 @@ package com.github.moinmarcell.springshop.controller;
 
 import com.github.moinmarcell.springshop.model.Order;
 import com.github.moinmarcell.springshop.model.Product;
-import com.github.moinmarcell.springshop.repository.OrderRepository;
-import com.github.moinmarcell.springshop.repository.ProductRepository;
 import com.github.moinmarcell.springshop.service.ShopService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/shop")
 public class ShopController {
 
-    private ShopService shopService;
+    private final ShopService shopService;
 
     public ShopController(ShopService shopService) {
         this.shopService = shopService;
@@ -66,7 +62,6 @@ public class ShopController {
         int counter = 1;
         String id = String.valueOf(counter);
         shopService.addOrder(id, ids);
-        counter++;
         return shopService.addOrder(id, ids);
     }
 }
