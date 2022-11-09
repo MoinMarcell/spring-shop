@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext
 class ShopControllerIntegrationTest {
 
     @Autowired
@@ -24,18 +27,15 @@ class ShopControllerIntegrationTest {
     private ProductRepository productRepository;
 
     @Test
-    void getProducts()
-            throws Exception {
-        try {
-            mvc.perform(get("/shop/products"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().json("[]"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @DirtiesContext
+    void getProducts() throws Exception {
+        mvc.perform(get("/shop/products"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 
     @Test
+    @DirtiesContext
     void getProduct() throws Exception {
         productRepository.list().add(new Product("Banane", "1"));
 
@@ -52,10 +52,18 @@ class ShopControllerIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void addProduct() throws Exception {
-        productRepository.list().add(new Product("Banane", "id"));
-
-        mvc.perform(post("/shop/products/addProduct"))
+        mvc.perform(post("/shop/products/addProduct")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                                        {
+                                        "name": "Banane",
+                                        "id": "1"
+                                        }
+                                        """
+                        ))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         """
@@ -68,7 +76,11 @@ class ShopControllerIntegrationTest {
     }
 
     @Test
-    void getOrders() {
+    @DirtiesContext
+    void getOrders() throws Exception {
+        mvc.perform(get("/shop/orders"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 
     @Test
